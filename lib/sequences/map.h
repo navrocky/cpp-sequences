@@ -38,10 +38,16 @@ private:
     Mapper mapper;
 };
 
+template <typename Ret, typename T, typename... Args>
+auto deducer(Ret (T::*)(Args...))
+{
+    return std::declval<Ret>();
+}
+
 template <typename Mapper>
 auto map(const Mapper& mapper)
 {
-    using ResultType = decltype(mapper());
+    using ResultType = decltype(deducer(&Mapper::operator()));
     return MappingSequenceFactory<ResultType, Mapper>(mapper);
 }
 }

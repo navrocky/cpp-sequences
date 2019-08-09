@@ -30,6 +30,12 @@ TEST_CASE("Sequence test")
         return i+1;
     });
 
+    IterableSequence<vector<int>> sec(v);
+
+    auto mappingSec = factory.create(sec);
+
+//    factory()
+
 //    auto m = map([](int v) { return v + 1; });
 
     //    auto s = sequenceFromIterable(v) % map() % toQVector();

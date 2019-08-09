@@ -6,7 +6,7 @@ namespace Sequences
 {
 
 template <typename Iterable>
-class IterableSequence : Sequence<typename Iterable::value_type>
+class IterableSequence : public Sequence<typename Iterable::value_type>
 {
 public:
     using ValueType = typename Iterable::value_type;
