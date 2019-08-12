@@ -2,4 +2,4 @@
 
 #include "sequences/sequence.h"
 #include "sequences/iterable_sequence.h"
-#include "sequences/map.h"
+#include "sequences/mapping_sequence.h"

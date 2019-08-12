@@ -1,19 +1,29 @@
 #pragma once
 
+#include <iostream>
+
 namespace Sequences
 {
 
-template <typename ValueType>
+template <typename ResultValueType>
 class Sequence
 {
 public:
-    virtual bool getNextValue(ValueType& v) = 0;
+    using ValueType = ResultValueType;
+//    virtual ~Sequence() {}
+
+//    virtual bool getNextValue(ValueType& v) = 0;
 };
 
-template <typename SrcValueType, typename DstSequence, typename SequenceCreator>
-DstSequence operator%(const Sequence<SrcValueType>& src, const SequenceCreator& creator)
+template <typename SrcValueType, typename SequenceCreator>
+auto operator%(Sequence<SrcValueType>& src, const SequenceCreator& creator)
 {
-
+    return creator.create(src);
 }
 
+template <typename SrcValueType, typename SequenceCreator>
+auto operator%(Sequence<SrcValueType>&& src, const SequenceCreator& creator)
+{
+    return creator.create(src);
+}
 }
