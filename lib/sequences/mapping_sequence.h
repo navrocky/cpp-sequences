@@ -17,15 +17,6 @@ class MappingSequence : public Sequence<ResultValueType>
 public:
     using SrcValueType = typename SrcSequence::ValueType;
 
-//    using Mapper = std::function<ResultValueType(const SrcValueType&)>;
-
-//    MappingSequence(SrcSequence& srcSequence, const Mapper& mapper)
-//        : srcSequence(srcSequence)
-//        , mapper(mapper)
-//    {
-//        std::cout << __FUNCTION__ << std::endl;
-//    }
-
     MappingSequence(SrcSequence&& srcSequence, Mapper&& mapper)
         : srcSequence(std::move(srcSequence))
         , mapper(std::move(mapper))
@@ -60,42 +51,42 @@ private:
     Mapper mapper;
 };
 
-template <typename ResultType, typename Mapper>
+template <typename Mapper>
 class MappingSequenceFactory
 {
 public:
     MappingSequenceFactory(Mapper&& mapper)
-        : mapper(mapper)
+        : mapper(std::move(mapper))
     {
         std::cout << __FUNCTION__ << std::endl;
+    }
+
+    MappingSequenceFactory(const MappingSequenceFactory<Mapper>& src) = delete;
+
+    MappingSequenceFactory(MappingSequenceFactory<Mapper>&& src)
+        : mapper(std::move(src.mapper))
+    {
     }
 
     template <typename SrcSequence>
-    MappingSequence<SrcSequence, ResultType> create(SrcSequence&& srcSequence) const
+    MappingSequence<SrcSequence, Mapper> create(SrcSequence&& srcSequence) const
     {
-        return MappingSequence<SrcSequence, ResultType>(srcSequence, mapper);
+        return MappingSequence<SrcSequence, Mapper>(std::move(srcSequence), Mapper(mapper));
         std::cout << __FUNCTION__ << std::endl;
     }
-
-//    template <typename SrcType>
-//    MappingSequence<SrcType, ResultType> create(Sequence<SrcType>&& srcSequence) const
-//    {
-//        return MappingSequence<SrcType, ResultType>(srcSequence, mapper);
-//    }
 
 private:
     Mapper mapper;
 };
 
 template <typename Mapper>
-auto map(const Mapper& mapper)
+auto map(Mapper&& mapper)
 {
-    using ResultType = decltype(resultDeducer(&Mapper::operator()));
-    return MappingSequenceFactory<ResultType, Mapper>(mapper);
+    return MappingSequenceFactory<Mapper>(std::move(mapper));
 }
 
 template <typename Sequence, typename Mapper>
-auto createMapperSequence(Sequence&& seq, Mapper&& mapper)
+auto createMappingSequence(Sequence&& seq, Mapper&& mapper)
 {
     return MappingSequence<Sequence, Mapper>(std::move(seq), std::move(mapper));
 }
