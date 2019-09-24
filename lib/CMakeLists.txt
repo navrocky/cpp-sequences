@@ -2,9 +2,10 @@ set(TARGET sequences)
 
 set(SOURCES
     sequences.h
+    common/sequence.h
+    common/sequence.cpp
     sequences/iterable_sequence.h
-    sequences/mapping_sequence.h
-    sequences/sequence.cpp
+    mutators/mapping_sequence.h
 )
 
 add_library(${TARGET} STATIC ${SOURCES})

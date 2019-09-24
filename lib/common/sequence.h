@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include <utility>
 
 namespace Sequences
 {
@@ -10,12 +10,6 @@ class Sequence
 {
 public:
     using ValueType = ResultValueType;
-
-//    bool getNextValue(ValueType& v);
-
-//    virtual ~Sequence() {}
-
-//    virtual bool getNextValue(ValueType& v) = 0;
 };
 
 //template <typename SrcValueType, typename SequenceCreator>
@@ -24,10 +18,10 @@ public:
 //    return creator.create(src);
 //}
 
-template <typename Sequence, typename SequenceCreator>
-auto operator%(Sequence&& src, SequenceCreator&& creator)
+template <typename Sequence, typename Continuation>
+auto operator>>(Sequence&& src, Continuation&& continuation)
 {
-    return creator.create(std::move(src));
+    return continuation.create(std::move(src));
 }
 
 

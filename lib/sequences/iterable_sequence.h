@@ -1,8 +1,8 @@
 #pragma once
 
-#include <type_traits>
+//#include <type_traits>
 
-#include "sequence.h"
+#include "../common/sequence.h"
 
 namespace Sequences
 {
@@ -28,43 +28,19 @@ protected:
     Iterator endIterator_;
 };
 
+template <typename Iterable>
+class RefIterableSequence : public BasicIterableSequence<Iterable>
+{
+public:
+    using ValueType = typename Iterable::value_type;
+    using Iterator = typename Iterable::const_iterator;
 
-//template <typename Iterable>
-//class RefIterableSequence : public Sequence<typename Iterable::value_type>
-//{
-//public:
-//    using ValueType = typename Iterable::value_type;
-//    using Iterator = typename Iterable::const_iterator;
-
-//    RefIterableSequence(const Iterator& begin, const Iterator& end)
-//        : iterator(begin)
-//        , endIterator(end)
-//    {
-//        std::cout << __FUNCTION__ << std::endl;
-//    }
-
-//    RefIterableSequence(const Iterable& iterable)
-//        : iterator(iterable.begin())
-//        , endIterator(iterable.end())
-//    {
-//        std::cout << __FUNCTION__ << std::endl;
-//    }
-
-//    ~RefIterableSequence() { std::cout << __FUNCTION__ << std::endl; }
-
-//    bool getNextValue(ValueType& v)
-//    {
-//        if (iterator == endIterator)
-//            return false;
-//        v = *iterator;
-//        ++iterator;
-//        return true;
-//    }
-
-//private:
-//    Iterator iterator;
-//    Iterator endIterator;
-//};
+    RefIterableSequence(const Iterable& iterable)
+    {
+        this->iterator_ = iterable.begin();
+        this->endIterator_ = iterable.end();
+    }
+};
 
 template <typename Iterable>
 class CopyIterableSequence : public BasicIterableSequence<Iterable>
@@ -94,11 +70,11 @@ private:
     Iterable iterable_;
 };
 
-//template <typename Iterable>
-//auto sequenceFromIterableRef(const Iterable& iterable)
-//{
-//    return RefIterableSequence<Iterable>(iterable);
-//}
+template <typename Iterable>
+auto sequenceFromIterableRef(const Iterable& iterable)
+{
+    return RefIterableSequence<Iterable>(iterable);
+}
 
 template <typename Iterable>
 auto sequenceFromIterableMove(Iterable&& iterable)

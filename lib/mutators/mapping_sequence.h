@@ -1,7 +1,8 @@
 #pragma once
 
-#include "sequence.h"
 #include <functional>
+
+#include "../common/sequence.h"
 
 namespace Sequences
 {
@@ -11,7 +12,8 @@ Ret mapperResultDeducer(Ret (T::*)(Arg) const)
 {
 }
 
-template <typename SrcSequence, typename Mapper, typename ResultValueType = decltype(mapperResultDeducer(&Mapper::operator()))>
+template <typename SrcSequence, typename Mapper,
+          typename ResultValueType = decltype(mapperResultDeducer(&Mapper::operator()))>
 class MappingSequence : public Sequence<ResultValueType>
 {
 public:
@@ -21,19 +23,12 @@ public:
         : srcSequence(std::move(srcSequence))
         , mapper(std::move(mapper))
     {
-        std::cout << __FUNCTION__ << std::endl;
     }
 
     MappingSequence(MappingSequence<SrcSequence, Mapper>&& src)
         : srcSequence(std::move(src.srcSequence))
         , mapper(std::move(src.mapper))
     {
-        std::cout << __FUNCTION__ << std::endl;
-    }
-
-    ~MappingSequence()
-    {
-        std::cout << __FUNCTION__ << std::endl;
     }
 
     bool getNextValue(ResultValueType& v)
@@ -52,18 +47,17 @@ private:
 };
 
 template <typename Mapper>
-class MappingSequenceFactory
+class MappingSequenceContinuation
 {
 public:
-    MappingSequenceFactory(Mapper&& mapper)
+    MappingSequenceContinuation(Mapper&& mapper)
         : mapper(std::move(mapper))
     {
-        std::cout << __FUNCTION__ << std::endl;
     }
 
-    MappingSequenceFactory(const MappingSequenceFactory<Mapper>& src) = delete;
+    MappingSequenceContinuation(const MappingSequenceContinuation<Mapper>& src) = delete;
 
-    MappingSequenceFactory(MappingSequenceFactory<Mapper>&& src)
+    MappingSequenceContinuation(MappingSequenceContinuation<Mapper>&& src)
         : mapper(std::move(src.mapper))
     {
     }
@@ -72,7 +66,6 @@ public:
     MappingSequence<SrcSequence, Mapper> create(SrcSequence&& srcSequence) const
     {
         return MappingSequence<SrcSequence, Mapper>(std::move(srcSequence), Mapper(mapper));
-        std::cout << __FUNCTION__ << std::endl;
     }
 
 private:
@@ -82,13 +75,6 @@ private:
 template <typename Mapper>
 auto map(Mapper&& mapper)
 {
-    return MappingSequenceFactory<Mapper>(std::move(mapper));
+    return MappingSequenceContinuation<Mapper>(std::move(mapper));
 }
-
-template <typename Sequence, typename Mapper>
-auto createMappingSequence(Sequence&& seq, Mapper&& mapper)
-{
-    return MappingSequence<Sequence, Mapper>(std::move(seq), std::move(mapper));
-}
-
 }

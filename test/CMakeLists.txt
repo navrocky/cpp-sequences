@@ -6,4 +6,4 @@ set(SOURCES
 )
 
 add_executable(${TARGET} ${SOURCES})
-target_link_libraries(${TARGET} sequences)
+#target_link_libraries(${TARGET} sequences)
