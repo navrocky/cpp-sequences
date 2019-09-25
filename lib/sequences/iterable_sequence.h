@@ -10,7 +10,18 @@ class BasicIterableSequence : public Sequence<typename Iterable::value_type>
 {
 public:
     using ValueType = typename Iterable::value_type;
+    using ValueTypeConstRef = const ValueType *;
     using Iterator = typename Iterable::const_iterator;
+
+    bool getNextValueRef(ValueTypeConstRef& v)
+    {
+        if (iterator_ == endIterator_)
+            return false;
+        v = &(*iterator_);
+        ++iterator_;
+        return true;
+    }
+
 
     bool getNextValue(ValueType& v)
     {

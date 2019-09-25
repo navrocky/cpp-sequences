@@ -2,6 +2,14 @@
 
 #include <string>
 
+namespace std
+{
+std::string to_string(const std::string& s)
+{
+    return s;
+}
+}
+
 namespace Sequences
 {
 

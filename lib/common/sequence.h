@@ -10,6 +10,7 @@ class Sequence
 {
 public:
     using ValueType = ResultValueType;
+    using ValueTypeConstRef = const ResultValueType*;
 };
 
 //template <typename SrcValueType, typename SequenceCreator>
@@ -22,6 +23,16 @@ template <typename Sequence, typename Continuation>
 auto operator>>(Sequence&& src, Continuation&& continuation)
 {
     return continuation.create(std::move(src));
+}
+
+namespace Internal {
+
+//template <typename Sequence, >
+//bool getNextSequenceValue(typename Sequence::ValueType& v)
+//{
+
+//}
+
 }
 
 

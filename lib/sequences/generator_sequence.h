@@ -7,20 +7,32 @@ namespace Sequences
 
 namespace Internal
 {
-template <typename Ret, typename T>
-Ret generatorResultDeducer(Ret (T::*)() const)
+template <typename T, typename Arg>
+Arg generatorArgDeducer(bool (T::*)(Arg&) const)
 {
 }
 }
 
-template <typename T, >
-class GeneratorSequence : public Sequence<T>
+template <typename Generator,
+          typename ResultValueType = decltype(Internal::generatorArgDeducer(&Generator::operator()))>
+class GeneratorSequence : public Sequence<ResultValueType>
 {
+public:
+    using ValueType = ResultValueType;
+    GeneratorSequence(const Generator& generator)
+        : generator(generator)
+    {
+    }
+
+    bool getNextValue(ResultValueType& v) { return generator(v); }
+
+private:
+    Generator generator;
 };
 
-template <typename Iterable>
-auto generateSequence(const Iterable& iterable)
+template <typename Generator>
+auto sequenceGenerator(const Generator& generator)
 {
-    return RefIterableSequence<Iterable>(iterable);
+    return GeneratorSequence<Generator>(generator);
 }
 }
