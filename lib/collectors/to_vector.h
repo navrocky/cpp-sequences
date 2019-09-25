@@ -5,7 +5,7 @@
 namespace Sequences
 {
 
-class ToNewVectorContinuation
+class ToNewVectorCollector
 {
 public:
     template <typename SrcSequence>
@@ -25,10 +25,10 @@ public:
 };
 
 template <typename VectorType>
-class ToVectorContinuation
+class ToVectorCollector
 {
 public:
-    ToVectorContinuation(VectorType& vector)
+    ToVectorCollector(VectorType& vector)
         : vector(vector)
     {
     }
@@ -52,12 +52,12 @@ private:
 
 auto toVector()
 {
-    return ToNewVectorContinuation();
+    return ToNewVectorCollector();
 }
 
 template <typename VectorType>
 auto toVector(VectorType& vector)
 {
-    return ToVectorContinuation<VectorType>(vector);
+    return ToVectorCollector<VectorType>(vector);
 }
 }

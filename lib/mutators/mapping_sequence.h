@@ -47,17 +47,17 @@ private:
 };
 
 template <typename Mapper>
-class MappingSequenceContinuation
+class MappingSequenceMutator
 {
 public:
-    MappingSequenceContinuation(Mapper&& mapper)
+    MappingSequenceMutator(Mapper&& mapper)
         : mapper(std::move(mapper))
     {
     }
 
-    MappingSequenceContinuation(const MappingSequenceContinuation<Mapper>& src) = delete;
+    MappingSequenceMutator(const MappingSequenceMutator<Mapper>& src) = delete;
 
-    MappingSequenceContinuation(MappingSequenceContinuation<Mapper>&& src)
+    MappingSequenceMutator(MappingSequenceMutator<Mapper>&& src)
         : mapper(std::move(src.mapper))
     {
     }
@@ -75,6 +75,6 @@ private:
 template <typename Mapper>
 auto map(Mapper&& mapper)
 {
-    return MappingSequenceContinuation<Mapper>(std::move(mapper));
+    return MappingSequenceMutator<Mapper>(std::move(mapper));
 }
 }

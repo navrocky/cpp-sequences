@@ -4,6 +4,7 @@ set(SOURCES
     sequences.h
     common/sequence.h
     common/sequence.cpp
+    sequences/args_sequence.h
     sequences/iterable_sequence.h
     mutators/mapping_sequence.h
 )

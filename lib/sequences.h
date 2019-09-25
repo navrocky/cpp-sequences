@@ -2,6 +2,7 @@
 
 #include "common/sequence.h"
 
+#include "sequences/generator_sequence.h"
 #include "sequences/range_sequence.h"
 #include "sequences/iterable_sequence.h"
 

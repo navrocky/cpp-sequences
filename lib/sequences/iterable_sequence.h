@@ -1,7 +1,5 @@
 #pragma once
 
-//#include <type_traits>
-
 #include "../common/sequence.h"
 
 namespace Sequences
@@ -51,8 +49,6 @@ public:
     {
         this->iterator_ = iterable_.begin();
         this->endIterator_ = iterable_.end();
-
-        std::cout << __FUNCTION__ << std::endl;
     }
 
     CopyIterableSequence(CopyIterableSequence<Iterable>&& src)
@@ -60,11 +56,7 @@ public:
     {
         this->iterator_ = std::move(src.iterator_);
         this->endIterator_ = std::move(src.endIterator_);
-
-        std::cout << __FUNCTION__ << std::endl;
     }
-
-    ~CopyIterableSequence() { std::cout << __FUNCTION__ << std::endl; }
 
 private:
     Iterable iterable_;
@@ -81,4 +73,11 @@ auto sequenceFromIterableMove(Iterable&& iterable)
 {
     return CopyIterableSequence<Iterable>(std::move(iterable));
 }
+
+template <typename T>
+auto sequenceFromInitializer(const std::initializer_list<T>& l)
+{
+    return RefIterableSequence<typename std::initializer_list<T>>(l);
+}
+
 }

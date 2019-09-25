@@ -36,4 +36,10 @@ auto sequenceFromRangeExcl(ValueType from, ValueType to)
 {
     return RangeSequence<ValueType>(from, to);
 }
+
+template <typename ValueType>
+auto sequenceFromRangeIncl(ValueType from, ValueType to)
+{
+    return RangeSequence<ValueType>(from, ++to);
+}
 }

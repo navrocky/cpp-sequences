@@ -1,22 +1,21 @@
 #pragma once
 
 #include <string>
-#include <utility>
 
 namespace Sequences
 {
 
-class JoinToStrStringContinuation
+class JoinToStrStringCollector
 {
 public:
-    JoinToStrStringContinuation(const std::string& separator)
+    JoinToStrStringCollector(const std::string& separator)
         : separator(separator)
     {
     }
 
-    JoinToStrStringContinuation(const JoinToStrStringContinuation& src) = delete;
+    JoinToStrStringCollector(const JoinToStrStringCollector& src) = delete;
 
-    JoinToStrStringContinuation(JoinToStrStringContinuation&& src)
+    JoinToStrStringCollector(JoinToStrStringCollector&& src)
         : separator(std::move(src.separator))
     {
     }
@@ -45,6 +44,6 @@ private:
 
 auto joinToStdString(const std::string& separator = ", ")
 {
-    return JoinToStrStringContinuation(separator);
+    return JoinToStrStringCollector(separator);
 }
 }

@@ -6,17 +6,17 @@ namespace Sequences
 {
 
 template <typename Block>
-class ForEachContinuation
+class ForEachCollector
 {
 public:
-    ForEachContinuation(Block&& block)
+    ForEachCollector(Block&& block)
         : block(std::move(block))
     {
     }
 
-    ForEachContinuation(const ForEachContinuation<Block>& src) = delete;
+    ForEachCollector(const ForEachCollector<Block>& src) = delete;
 
-    ForEachContinuation(ForEachContinuation<Block>&& src)
+    ForEachCollector(ForEachCollector<Block>&& src)
         : block(std::move(src.block))
     {
     }
@@ -38,6 +38,6 @@ private:
 template <typename Block>
 auto forEach(Block&& block)
 {
-    return ForEachContinuation<Block>(std::move(block));
+    return ForEachCollector<Block>(std::move(block));
 }
 }
