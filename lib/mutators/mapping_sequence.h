@@ -7,13 +7,16 @@
 namespace Sequences
 {
 
+namespace Internal
+{
 template <typename Ret, typename T, typename Arg>
 Ret mapperResultDeducer(Ret (T::*)(Arg) const)
 {
 }
+}
 
 template <typename SrcSequence, typename Mapper,
-          typename ResultValueType = decltype(mapperResultDeducer(&Mapper::operator()))>
+          typename ResultValueType = decltype(Internal::mapperResultDeducer(&Mapper::operator()))>
 class MappingSequence : public Sequence<ResultValueType>
 {
 public:
@@ -33,12 +36,8 @@ public:
 
     bool getNextValue(ResultValueType& v)
     {
-        SrcValueType srcValue;
-        bool hasNext = srcSequence.getNextValue(srcValue);
-        if (!hasNext)
-            return false;
-        v = mapper(srcValue);
-        return true;
+        return Internal::getNextSequenceValue(
+            srcSequence, [&v, this](const SrcValueType& srcVal) { v = mapper(srcVal); });
     }
 
 private:

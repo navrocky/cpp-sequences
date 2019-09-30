@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../common/sequence.h"
 #include <string>
 
 namespace std
@@ -35,13 +36,15 @@ public:
 
         std::string result;
         typename SrcSequence::ValueType val;
-        while (srcSequence.getNextValue(val))
+        while (Internal::getNextSequenceValue(
+            srcSequence, [&result, this](const typename SrcSequence::ValueType& val) {
+                auto s = std::to_string(val);
+                if (result.empty())
+                    result = s;
+                else
+                    result += separator + s;
+            }))
         {
-            auto s = std::to_string(val);
-            if (result.empty())
-                result = s;
-            else
-                result += separator + s;
         }
         return result;
     }

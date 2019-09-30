@@ -101,92 +101,35 @@ TEST_CASE("Sequence from std::map")
     m[0] = "zero";
     m[1] = "one";
 
-    //    auto s = sequenceFromIterableRef(m)
-    //             >> map([](const Map::value_type& pair) { return pair.second; })
-    //             >> joinToStdString(",");
+    auto s = sequenceFromIterableRef(m)
+             >> map([](const Map::value_type& pair) { return pair.second; })
+             >> joinToStdString(",");
 
-    //    REQUIRE(sequenceFromIterableRef(m) >> map([](std::map<int, std::string>::value_type pair)
-    //    {
-    //        return pair.second;
-    //    }) >> joinToStdString(",") == "");
+    REQUIRE(s == "zero,one");
 }
 
-template <class T>
-struct HasMethod
+TEST_CASE("Check for generic getNextSequenceValue")
 {
-    typedef char yes[1];
-    typedef char no[2];
+    auto seq1 = sequenceGenerator([](int& v) {
+        v = 1;
+        return true;
+    });
+    auto seq2 = sequenceFromInitializer({ 1, 2, 3 });
 
-    template <typename U, U u>
-    struct reallyHas;
+    Internal::getNextSequenceValue(seq1, [](int v) {
+        REQUIRE(v == 1);
+        return true;
+    });
 
-//    template <typename C>
-    static yes& test(reallyHas<std::string (T::*)(), &T::toString>*);
-
-    template <typename C>
-    static yes& test(reallyHas<std::string (T::*)() const, &T::toString>*);
-
-    template <typename>
-    static no& test(...);
-
-    static const bool value = sizeof(test<T>(0)) == sizeof(yes);
-};
-
-template <class T>
-struct HasToString
-{
-    typedef char yes[1];
-    typedef char no[2];
-    template <typename U, U u>
-    struct reallyHas;
-    template <typename C>
-    static yes& test(reallyHas<std::string (C::*)(), &C::toString>*);
-    template <typename C>
-    static yes& test(reallyHas<std::string (C::*)() const, &C::toString>*);
-    template <typename>
-    static no& test(...);
-    static const bool value = sizeof(test<T>(0)) == sizeof(yes);
-};
-
-template <typename T>
-typename std::enable_if<HasToString<T>::value>::type printAsString(T t)
-{
-    std::cout << t.toString() << std::endl;
+    Internal::getNextSequenceValue(seq2, [](int v) {
+        REQUIRE(v == 1);
+        return true;
+    });
 }
 
-template <typename T>
-typename std::enable_if<!HasToString<T>::value>::type printAsString(T)
+TEST_CASE("Test filtering")
 {
-    std::cout << "Dont know this type" << std::endl;
-}
-
-struct A
-{
-    std::string toString() { return "A"; }
-};
-
-struct B
-{
-};
-
-
-
-
-
-TEST_CASE("Check for method exists")
-{
-    auto seq1 = sequenceGenerator([](int& v){ v = 0; return true; });
-    auto seq2 = sequenceFromInitializer({1, 2, 3});
-
-
-
-
-
-    A a;
-    B b;
-
-    std::cout << HasMethod<B>::value << std::endl;
-
-    printAsString(a);
-    printAsString(b);
+    auto s = sequenceFromInitializer({ 1, 2, 3, 4 }) >> filter([](int i) { return i % 2 == 0; })
+             >> joinToStdString(",");
+    REQUIRE(s == "2,4");
 }

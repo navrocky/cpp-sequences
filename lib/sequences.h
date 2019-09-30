@@ -7,6 +7,7 @@
 #include "sequences/generator_sequence.h"
 
 #include "mutators/mapping_sequence.h"
+#include "mutators/filter_sequence.h"
 
 #include "collectors/for_each.h"
 #include "collectors/join_to_std_string.h"

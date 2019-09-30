@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include "../common/sequence.h"
 
 namespace Sequences
 {
@@ -25,9 +26,8 @@ public:
     void create(SrcSequence&& srcSequence) const
     {
         typename SrcSequence::ValueType val;
-        while (srcSequence.getNextValue(val))
+        while (Internal::getNextSequenceValue(srcSequence, block))
         {
-            block(val);
         }
     }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../common/sequence.h"
 #include <vector>
 
 namespace Sequences
@@ -16,9 +17,9 @@ public:
         using ValType = typename SrcSequence::ValueType;
         std::vector<ValType> result;
         ValType val;
-        while (srcSequence.getNextValue(val))
+        while (Internal::getNextSequenceValue(
+            srcSequence, [&result](const ValType& val) { result.push_back(val); }))
         {
-            result.push_back(val);
         }
         return result;
     }

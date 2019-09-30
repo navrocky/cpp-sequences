@@ -7,6 +7,7 @@ set(SOURCES
     sequences/args_sequence.h
     sequences/iterable_sequence.h
     mutators/mapping_sequence.h
+    mutators/filter_sequence.h
 )
 
 add_library(${TARGET} STATIC ${SOURCES})
