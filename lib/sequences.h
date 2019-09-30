@@ -12,3 +12,4 @@
 #include "collectors/for_each.h"
 #include "collectors/join_to_std_string.h"
 #include "collectors/to_vector.h"
+#include "collectors/first_or_default.h"

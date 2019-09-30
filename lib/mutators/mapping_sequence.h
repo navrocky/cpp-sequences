@@ -13,7 +13,6 @@ template <typename Ret, typename T, typename Arg>
 Ret mapperResultDeducer(Ret (T::*)(Arg) const)
 {
 }
-}
 
 template <typename SrcSequence, typename Mapper,
           typename ResultValueType = decltype(Internal::mapperResultDeducer(&Mapper::operator()))>
@@ -70,10 +69,11 @@ public:
 private:
     Mapper mapper;
 };
+}
 
 template <typename Mapper>
 auto map(Mapper&& mapper)
 {
-    return MappingSequenceMutator<Mapper>(std::move(mapper));
+    return Internal::MappingSequenceMutator<Mapper>(std::move(mapper));
 }
 }

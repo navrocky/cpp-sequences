@@ -3,21 +3,23 @@
 
 namespace Sequences
 {
+namespace Internal
+{
 
 template <typename SrcSequence, typename Filter>
-class FilterSequence : public Sequence<typename SrcSequence::ValueType>
+class RefFilterSequence : public Sequence<typename SrcSequence::ValueType>
 {
 public:
     using ValueType = typename SrcSequence::ValueType;
     using ValueTypeConstRef = const ValueType*;
 
-    FilterSequence(SrcSequence&& srcSequence, Filter&& mapper)
+    RefFilterSequence(SrcSequence&& srcSequence, Filter&& mapper)
         : srcSequence(std::move(srcSequence))
         , filter(std::move(mapper))
     {
     }
 
-    FilterSequence(FilterSequence<SrcSequence, Filter>&& src)
+    RefFilterSequence(RefFilterSequence<SrcSequence, Filter>&& src)
         : srcSequence(std::move(src.srcSequence))
         , filter(std::move(src.filter))
     {
@@ -25,17 +27,52 @@ public:
 
     bool getNextValueRef(ValueTypeConstRef& v)
     {
-        bool found = false;
-        while (Internal::getNextSequenceValue(srcSequence,
-                                              [&v, &found, this](const ValueType& srcVal) {
-                                                  found = filter(srcVal);
-                                                  if (found)
-                                                      v = srcVal;
-
-                                              }))
+        ValueTypeConstRef val;
+        while (srcSequence.getNextValueRef(val))
         {
-            if (found)
+            if (filter(*val))
+            {
+                v = val;
                 return true;
+            }
+        }
+        return false;
+    }
+
+private:
+    SrcSequence srcSequence;
+    Filter filter;
+};
+
+template <typename SrcSequence, typename Filter>
+class CopyFilterSequence : public Sequence<typename SrcSequence::ValueType>
+{
+public:
+    using ValueType = typename SrcSequence::ValueType;
+    using ValueTypeConstRef = const ValueType*;
+
+    CopyFilterSequence(SrcSequence&& srcSequence, Filter&& mapper)
+        : srcSequence(std::move(srcSequence))
+        , filter(std::move(mapper))
+    {
+    }
+
+    CopyFilterSequence(CopyFilterSequence<SrcSequence, Filter>&& src)
+        : srcSequence(std::move(src.srcSequence))
+        , filter(std::move(src.filter))
+    {
+    }
+
+    bool getNextValue(ValueType& v)
+    {
+        ValueType val;
+        while (srcSequence.getNextValue(val))
+        {
+            if (filter(val))
+            {
+                v = val;
+                return true;
+            }
         }
         return false;
     }
@@ -61,19 +98,28 @@ public:
     {
     }
 
-    template <typename SrcSequence>
-    FilterSequence<SrcSequence, Filter> create(SrcSequence&& srcSequence) const
+    template <typename SrcSequence,
+              std::enable_if_t<Internal::HasGetNextValueRef<SrcSequence>::value, int> = 0>
+    auto create(SrcSequence&& srcSequence) const
     {
-        return FilterSequence<SrcSequence, Filter>(std::move(srcSequence), Filter(filter));
+        return RefFilterSequence<SrcSequence, Filter>(std::move(srcSequence), Filter(filter));
+    }
+
+    template <typename SrcSequence,
+              std::enable_if_t<!Internal::HasGetNextValueRef<SrcSequence>::value, int> = 0>
+    auto create(SrcSequence&& srcSequence) const
+    {
+        return CopyFilterSequence<SrcSequence, Filter>(std::move(srcSequence), Filter(filter));
     }
 
 private:
     Filter filter;
 };
+}
 
 template <typename Filter>
 auto filter(Filter&& filter)
 {
-    return FilterSequenceMutator<Filter>(std::move(filter));
+    return Internal::FilterSequenceMutator<Filter>(std::move(filter));
 }
 }

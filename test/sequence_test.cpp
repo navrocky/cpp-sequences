@@ -22,7 +22,7 @@ TEST_CASE("Iterable sequence")
 template <typename Mapper>
 auto createMappingFactory(Mapper&& mapper)
 {
-    return MappingSequenceMutator<Mapper>(std::move(mapper));
+    return Internal::MappingSequenceMutator<Mapper>(std::move(mapper));
 }
 
 TEST_CASE("Mapping sequence")
@@ -132,4 +132,36 @@ TEST_CASE("Test filtering")
     auto s = sequenceFromInitializer({ 1, 2, 3, 4 }) >> filter([](int i) { return i % 2 == 0; })
              >> joinToStdString(",");
     REQUIRE(s == "2,4");
+
+    int i = 0;
+    auto s2 = sequenceGenerator([&i](std::string& v) {
+                  v = std::to_string(++i);
+                  return i < 5;
+              })
+              >> filter([](const std::string& s) { return s == "1" || s == "3"; })
+              >> joinToStdString(",");
+
+    REQUIRE(s2 == "1,3");
+}
+
+TEST_CASE("All")
+{
+    int i = 0;
+    auto s = sequenceGenerator([&i](int& v) {
+        v = i++;
+        return v < 10;
+    }) >> filter([](int i) { return i % 2 == 0; })
+        >> map([](int i) { return std::to_string(i) + "v"; }) >> joinToStdString(",");
+
+    REQUIRE(s == "0v,2v,4v,6v,8v");
+}
+
+TEST_CASE("Test first or default")
+{
+    auto v = sequenceFromInitializer({ 1, 2, 3, 4 }) >> firstOrDefault(0);
+    REQUIRE(v == 1);
+
+    auto v2 = sequenceFromInitializer<int>({}) >> firstOrDefault(10);
+    REQUIRE(v2 == 10);
+
 }
